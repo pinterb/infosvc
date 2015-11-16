@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 )
@@ -61,7 +62,17 @@ func EncodeHostRequest(r *http.Request, request interface{}) error {
 // transport/http.Server.
 func DecodeHostRequest(r *http.Request) (interface{}, error) {
 	var request HostRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
+	var err error
+	
+	switch r.Method {
+	   case "GET":
+	       // Serve the resource.
+	   case "POST":
+			err = json.NewDecoder(r.Body).Decode(&request)
+	   default:
+	   		err = errors.New("host endpoint does not support this request method")
+	}
+
 	return request, err
 }
 

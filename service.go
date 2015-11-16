@@ -4,6 +4,7 @@ import (
     "fmt"
 	"time"
 	"net"
+	"os"
 
     "github.com/kelseyhightower/envconfig"
 	"github.com/pinterb/infosvc/server"
@@ -31,7 +32,7 @@ func (pureInfoService) Host() (server.HostResponse, error) {
 	
 	err := envconfig.Process("infosvc", &hostSpec)
 	if err != nil {
-	    errResp = err.Error() 
+	    errResp = err.Error()
     }
 
     var ips []string
@@ -45,8 +46,13 @@ func (pureInfoService) Host() (server.HostResponse, error) {
 		}
 	}
 
+	myHostName, err := os.Hostname()
+	if err != nil {
+	    errResp = err.Error()
+	}
+
     var myOS = fmt.Sprintf("%s %s", hostSpec.OS, hostSpec.Arch)
-	return server.HostResponse{Name: hostSpec.Host, OS: myOS, Addrs: ips, Err: errResp}, nil
+	return server.HostResponse{Name: myHostName, OS: myOS, Addrs: ips, Err: errResp}, nil
 }
 
 type loggingMiddleware struct {

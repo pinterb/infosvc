@@ -1,4 +1,4 @@
-VERSION=0.1.0
+VERSION=0.2.0
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(shell dirname $(MKFILE_PATH))
 DOCKER_BIN := $(shell which docker)
@@ -54,6 +54,11 @@ push: container
 
 .PHONY: refresh
 refresh: container
+
+# Tag current version as a release on GitHub
+.PHONY: tag_gh
+tag_gh:
+		git tag -d rel-$(VERSION); git push origin :refs/tags/rel-$(VERSION); git tag rel-$(VERSION) && git push origin rel-$(VERSION)
 
 .PHONY: clean
 clean: docker.gc
